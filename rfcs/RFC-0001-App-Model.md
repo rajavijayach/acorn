@@ -1,35 +1,68 @@
 # RFC-0001: App Model
 
 ## Status
-Draft
+Accepted
 
 ## Purpose
-Define the core domain model used by Acorn.
+Define the core domain entities used throughout Acorn.
 
-## Concepts
+## Domain Model
 
 ### AppTemplate
-A curated blueprint maintained by Acorn.
+Read-only curated blueprint shipped with Acorn.
 
-Examples:
-- PostgreSQL
-- Redis
-- Ollama
-- Open WebUI
-- N8N
+Fields:
+- id
+- name
+- category
+- icon
+- templateVersion
+- templateDefinition
 
 ### AppManifest
-User-specific configuration generated from a template.
+User configuration generated from a template.
+
+Fields:
+- id
+- appId
+- schemaVersion
+- manifestYaml
+- createdAt
+- updatedAt
 
 ### InstalledApp
-A deployed application managed by Acorn.
+Represents an installed application.
+
+Fields:
+- id
+- name
+- templateId
+- status
+- manifestId
+- createdAt
+- updatedAt
+
+## Status Values
+
+- installing
+- running
+- stopped
+- failed
+- deleting
 
 ## Lifecycle
 
-Template -> Manifest -> Installed App
+Template -> Manifest -> InstalledApp
 
-## Design Rules
+## Resource Ownership
 
-- Users install apps, not containers
-- Templates are curated in v0.1
-- One InstalledApp maps to one manifest
+Each InstalledApp owns:
+- One manifest
+- One primary container
+- Zero or more volumes
+
+## Persistence
+
+InstalledApp records are stored in SQLite.
+
+Manifests are stored as versioned YAML blobs.
