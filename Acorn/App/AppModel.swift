@@ -50,6 +50,35 @@ final class AppModel {
         }
     }
 
+    func installApp(template: AppTemplate, appName: String, settings: [String: String]) throws {
+        guard let repository = repository else {
+            throw StorageError.executionFailed(message: "Database not initialized")
+        }
+
+        let manifest = try ManifestRenderer().render(
+            template: template,
+            appName: appName,
+            settings: settings
+        )
+
+        try repository.save(manifest: manifest)
+
+        let installedApp = InstalledApp(
+            id: UUID().uuidString,
+            name: appName,
+            templateID: template.id,
+            status: .running,
+            manifestID: manifest.id,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+
+        try repository.save(installedApp: installedApp)
+
+        // Refresh list
+        installedApps = try repository.installedApps()
+    }
+
     private static var databaseURL: URL {
         FileManager.default
             .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]

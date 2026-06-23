@@ -17,7 +17,7 @@ struct ContentView: View {
                 case .home:
                     HomeView(runtimeInfo: appModel.runtimeInfo, installedApps: appModel.installedApps)
                 case .discover:
-                    DiscoverView(catalog: appModel.catalog)
+                    DiscoverView(catalog: appModel.catalog, appModel: appModel)
                 case .settings:
                     SettingsView(
                         runtimeInfo: appModel.runtimeInfo,

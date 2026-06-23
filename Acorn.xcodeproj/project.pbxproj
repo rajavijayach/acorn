@@ -26,6 +26,7 @@
 		0A1B2C3D4E5F001122334411 /* postgresql.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334311 /* postgresql.yaml */; };
 		0A1B2C3D4E5F001122334412 /* ManifestRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334312 /* ManifestRenderer.swift */; };
 		0A1B2C3D4E5F001122334413 /* ManifestRenderingVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334313 /* ManifestRenderingVerifier.swift */; };
+		0A1B2C3D4E5F001122334414 /* InstallWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334314 /* InstallWizardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		0A1B2C3D4E5F001122334311 /* postgresql.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = postgresql.yaml; sourceTree = "<group>"; };
 		0A1B2C3D4E5F001122334312 /* ManifestRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestRenderer.swift; sourceTree = "<group>"; };
 		0A1B2C3D4E5F001122334313 /* ManifestRenderingVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestRenderingVerifier.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F001122334314 /* InstallWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstallWizardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				0A1B2C3D4E5F001122334307 /* AppModel.swift */,
+				0A1B2C3D4E5F001122334314 /* InstallWizardView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -263,6 +266,7 @@
 				0A1B2C3D4E5F001122334410 /* SQLiteStorageVerifier.swift in Sources */,
 				0A1B2C3D4E5F001122334412 /* ManifestRenderer.swift in Sources */,
 				0A1B2C3D4E5F001122334413 /* ManifestRenderingVerifier.swift in Sources */,
+				0A1B2C3D4E5F001122334414 /* InstallWizardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

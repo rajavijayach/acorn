@@ -2,6 +2,9 @@ import SwiftUI
 
 struct DiscoverView: View {
     let catalog: [AppTemplate]
+    let appModel: AppModel
+
+    @State private var selectedTemplateForInstall: AppTemplate?
 
     private var categories: [String] {
         Array(Set(catalog.map(\.category))).sorted()
@@ -10,16 +13,22 @@ struct DiscoverView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-            HeaderView(title: "Discover", subtitle: "Application catalog coming next.")
+                HeaderView(title: "Discover", subtitle: "Application catalog coming next.")
 
                 ForEach(categories, id: \.self) { category in
                     CatalogCategorySection(
                         category: category,
-                        templates: catalog.filter { $0.category == category }
+                        templates: catalog.filter { $0.category == category },
+                        onSelectTemplate: { template in
+                            selectedTemplateForInstall = template
+                        }
                     )
                 }
             }
             .padding(28)
+        }
+        .sheet(item: $selectedTemplateForInstall) { template in
+            InstallWizardView(template: template, appModel: appModel)
         }
     }
 }
@@ -27,6 +36,7 @@ struct DiscoverView: View {
 struct CatalogCategorySection: View {
     let category: String
     let templates: [AppTemplate]
+    let onSelectTemplate: (AppTemplate) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -36,7 +46,9 @@ struct CatalogCategorySection: View {
 
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 220), spacing: 12)], spacing: 12) {
                 ForEach(templates) { template in
-                    CatalogAppCard(template: template)
+                    CatalogAppCard(template: template, onSelect: {
+                        onSelectTemplate(template)
+                    })
                 }
             }
         }
@@ -45,6 +57,7 @@ struct CatalogCategorySection: View {
 
 struct CatalogAppCard: View {
     let template: AppTemplate
+    let onSelect: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -72,10 +85,10 @@ struct CatalogAppCard: View {
             Spacer(minLength: 0)
 
             Button {
+                onSelect()
             } label: {
                 Label("View Details", systemImage: "arrow.right.circle")
             }
-            .disabled(true)
         }
         .frame(minHeight: 142, alignment: .topLeading)
         .padding(16)
@@ -84,5 +97,5 @@ struct CatalogAppCard: View {
 }
 
 #Preview {
-    DiscoverView(catalog: [])
+    DiscoverView(catalog: [], appModel: AppModel())
 }
