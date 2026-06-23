@@ -1,39 +1,46 @@
 # RFC-0004: Apple Container Integration
 
 ## Status
-Draft
+Accepted
 
-## Goal
-Define how Acorn interacts with Apple Container.
+## Purpose
+Define runtime integration with Apple Container.
 
-## Scope
+## Runtime Service
 
-Acorn is built specifically for Apple Container.
-
-Runtime abstraction is intentionally out of scope.
-
-## Integration Layer
-
-Acorn invokes Apple Container commands through a runtime service.
-
-Examples:
-
-- container run
-- container stop
-- container logs
-- container build
+The RuntimeService is the only component allowed to invoke the container CLI.
 
 ## Responsibilities
 
-Runtime service:
+- Install detection
+- Command execution
+- Log collection
+- Status collection
+- Error handling
 
-- Execute commands
-- Capture output
-- Track status
-- Surface errors
+## Supported Commands
+
+- container run
+- container stop
+- container start
+- container logs
+- container ps
+
+## Error Model
+
+Runtime errors must be normalized into:
+
+- installationFailed
+- startupFailed
+- stopFailed
+- runtimeUnavailable
 
 ## Non Goals
 
-- Docker support
-- Podman support
-- Kubernetes support
+- Docker compatibility
+- Podman compatibility
+- Runtime abstraction layers
+
+## Future
+
+Additional Apple Container capabilities may be surfaced as native Acorn features.
