@@ -412,7 +412,7 @@ struct InstallWizardView: View {
             settings["database"] = database.isEmpty ? "app" : database
 
             do {
-                try appModel.installApp(
+                try await appModel.installApp(
                     template: template,
                     appName: appName,
                     settings: settings

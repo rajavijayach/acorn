@@ -36,6 +36,7 @@ struct TemplateLoader {
         let yaml = try String(contentsOf: url, encoding: .utf8)
         let fields = parseTopLevelFields(in: yaml)
         let settings = parseSettings(in: yaml)
+        let runtime = parseRuntime(in: yaml)
 
         let template = AppTemplate(
             id: fields["id"] ?? "",
@@ -44,7 +45,8 @@ struct TemplateLoader {
             image: fields["image"] ?? "",
             summary: fields["summary"],
             settings: settings,
-            source: .bundled
+            source: .bundled,
+            runtime: runtime
         )
 
         guard template.validates else {
@@ -118,6 +120,113 @@ struct TemplateLoader {
         return settings
     }
 
+    private func parseRuntime(in yaml: String) -> RuntimeSpec? {
+        var ports: [PortMapping] = []
+        var environment: [String: String] = [:]
+        var volumes: [VolumeMapping] = []
+
+        let lines = yaml.split(separator: "\n").map(String.init)
+        
+        enum Section {
+            case none
+            case ports
+            case environment
+            case volumes
+        }
+        
+        var currentSection = Section.none
+        var inRuntime = false
+        
+        var currentPortHost: String?
+        var currentPortContainer: String?
+        
+        var currentVolumeName: String?
+        var currentVolumePath: String?
+
+        func flushPort() {
+            if let host = currentPortHost, let container = currentPortContainer {
+                ports.append(PortMapping(host: host, container: container))
+            }
+            currentPortHost = nil
+            currentPortContainer = nil
+        }
+
+        func flushVolume() {
+            if let name = currentVolumeName, let path = currentVolumePath {
+                volumes.append(VolumeMapping(name: name, path: path))
+            }
+            currentVolumeName = nil
+            currentVolumePath = nil
+        }
+
+        for rawLine in lines {
+            let trimmed = rawLine.trimmingCharacters(in: .whitespaces)
+            
+            if !rawLine.hasPrefix(" ") && !rawLine.hasPrefix("-") {
+                if rawLine.hasPrefix("runtime:") {
+                    inRuntime = true
+                } else {
+                    inRuntime = false
+                }
+                currentSection = .none
+                continue
+            }
+            
+            guard inRuntime else { continue }
+            
+            if trimmed.hasPrefix("ports:") {
+                flushVolume()
+                currentSection = .ports
+                continue
+            } else if trimmed.hasPrefix("environment:") {
+                flushPort()
+                flushVolume()
+                currentSection = .environment
+                continue
+            } else if trimmed.hasPrefix("volumes:") {
+                flushPort()
+                currentSection = .volumes
+                continue
+            }
+            
+            switch currentSection {
+            case .ports:
+                if trimmed.hasPrefix("- host:") {
+                    flushPort()
+                    currentPortHost = value(after: "- host:", in: trimmed)
+                } else if trimmed.hasPrefix("container:") {
+                    currentPortContainer = value(after: "container:", in: trimmed)
+                }
+            case .environment:
+                if let colonIndex = trimmed.firstIndex(of: ":") {
+                    let key = trimmed[..<colonIndex].trimmingCharacters(in: .whitespaces)
+                    let val = trimmed[trimmed.index(after: colonIndex)...]
+                        .trimmingCharacters(in: .whitespaces)
+                        .trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                    environment[key] = val
+                }
+            case .volumes:
+                if trimmed.hasPrefix("- name:") {
+                    flushVolume()
+                    currentVolumeName = value(after: "- name:", in: trimmed)
+                } else if trimmed.hasPrefix("path:") {
+                    currentVolumePath = value(after: "path:", in: trimmed)
+                }
+            case .none:
+                break
+            }
+        }
+        
+        flushPort()
+        flushVolume()
+        
+        if ports.isEmpty && environment.isEmpty && volumes.isEmpty {
+            return nil
+        }
+        
+        return RuntimeSpec(ports: ports, environment: environment, volumes: volumes)
+    }
+
     private func value(after prefix: String, in line: String) -> String {
         line
             .dropFirst(prefix.count)
@@ -133,7 +242,8 @@ struct TemplateLoader {
             image: "ollama/ollama:latest",
             summary: "Run local language models.",
             settings: [TemplateSetting(id: "port", type: .integer, title: "Port", defaultValue: "11434")],
-            source: .catalogSeed
+            source: .catalogSeed,
+            runtime: nil
         ),
         AppTemplate(
             id: "open-webui",
@@ -142,7 +252,8 @@ struct TemplateLoader {
             image: "ghcr.io/open-webui/open-webui:main",
             summary: "A web interface for local AI workflows.",
             settings: [TemplateSetting(id: "port", type: .integer, title: "Port", defaultValue: "3000")],
-            source: .catalogSeed
+            source: .catalogSeed,
+            runtime: nil
         ),
         AppTemplate(
             id: "redis",
@@ -151,7 +262,8 @@ struct TemplateLoader {
             image: "redis:7",
             summary: "In-memory data store.",
             settings: [TemplateSetting(id: "port", type: .integer, title: "Port", defaultValue: "6379")],
-            source: .catalogSeed
+            source: .catalogSeed,
+            runtime: nil
         ),
         AppTemplate(
             id: "n8n",
@@ -160,7 +272,8 @@ struct TemplateLoader {
             image: "n8nio/n8n:latest",
             summary: "Workflow automation for connected apps.",
             settings: [TemplateSetting(id: "port", type: .integer, title: "Port", defaultValue: "5678")],
-            source: .catalogSeed
+            source: .catalogSeed,
+            runtime: nil
         )
     ]
 }

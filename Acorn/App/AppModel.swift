@@ -50,7 +50,7 @@ final class AppModel {
         }
     }
 
-    func installApp(template: AppTemplate, appName: String, settings: [String: String]) throws {
+    func installApp(template: AppTemplate, appName: String, settings: [String: String]) async throws {
         guard let repository = repository else {
             throw StorageError.executionFailed(message: "Database not initialized")
         }
@@ -60,6 +60,9 @@ final class AppModel {
             appName: appName,
             settings: settings
         )
+
+        // Run the installation using RuntimeService
+        try await runtimeService.installApp(manifest: manifest, template: template)
 
         try repository.save(manifest: manifest)
 
