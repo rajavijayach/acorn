@@ -24,6 +24,8 @@
 		0A1B2C3D4E5F00112233440F /* AppRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F00112233430F /* AppRepository.swift */; };
 		0A1B2C3D4E5F001122334410 /* SQLiteStorageVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334310 /* SQLiteStorageVerifier.swift */; };
 		0A1B2C3D4E5F001122334411 /* postgresql.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334311 /* postgresql.yaml */; };
+		0A1B2C3D4E5F001122334412 /* ManifestRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334312 /* ManifestRenderer.swift */; };
+		0A1B2C3D4E5F001122334413 /* ManifestRenderingVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334313 /* ManifestRenderingVerifier.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +47,8 @@
 		0A1B2C3D4E5F00112233430F /* AppRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRepository.swift; sourceTree = "<group>"; };
 		0A1B2C3D4E5F001122334310 /* SQLiteStorageVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteStorageVerifier.swift; sourceTree = "<group>"; };
 		0A1B2C3D4E5F001122334311 /* postgresql.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = postgresql.yaml; sourceTree = "<group>"; };
+		0A1B2C3D4E5F001122334312 /* ManifestRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestRenderer.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F001122334313 /* ManifestRenderingVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestRenderingVerifier.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				0A1B2C3D4E5F001122334107 /* Models */,
+				0A1B2C3D4E5F00112233410D /* Manifests */,
 				0A1B2C3D4E5F001122334108 /* Runtime */,
 				0A1B2C3D4E5F001122334109 /* Storage */,
 				0A1B2C3D4E5F00112233410A /* Templates */,
@@ -117,6 +122,15 @@
 				0A1B2C3D4E5F00112233430A /* AppManifest.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F00112233410D /* Manifests */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B2C3D4E5F001122334312 /* ManifestRenderer.swift */,
+				0A1B2C3D4E5F001122334313 /* ManifestRenderingVerifier.swift */,
+			);
+			path = Manifests;
 			sourceTree = "<group>";
 		};
 		0A1B2C3D4E5F001122334108 /* Runtime */ = {
@@ -247,6 +261,8 @@
 				0A1B2C3D4E5F00112233440E /* SQLiteDatabase.swift in Sources */,
 				0A1B2C3D4E5F00112233440F /* AppRepository.swift in Sources */,
 				0A1B2C3D4E5F001122334410 /* SQLiteStorageVerifier.swift in Sources */,
+				0A1B2C3D4E5F001122334412 /* ManifestRenderer.swift in Sources */,
+				0A1B2C3D4E5F001122334413 /* ManifestRenderingVerifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

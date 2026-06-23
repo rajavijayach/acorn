@@ -41,6 +41,9 @@ final class AppModel {
     private func loadCatalog() {
         do {
             catalog = try templateLoader.initialCatalog()
+            if let postgreSQLTemplate = catalog.first(where: { $0.id == "postgresql" }) {
+                try ManifestRenderingVerifier.verifyPostgreSQLPersistence(template: postgreSQLTemplate)
+            }
             templateStatus = .ready("Loaded \(catalog.count) apps")
         } catch {
             templateStatus = .failed(error.localizedDescription)

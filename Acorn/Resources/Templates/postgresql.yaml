@@ -16,9 +16,13 @@ settings:
     type: password
     title: Password
     default: postgres
+  - id: port
+    type: integer
+    title: Port
+    default: 5432
 runtime:
   ports:
-    - host: 5432
+    - host: "{{settings.port}}"
       container: 5432
   environment:
     POSTGRES_DB: "{{settings.database}}"

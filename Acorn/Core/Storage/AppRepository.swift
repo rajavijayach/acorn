@@ -80,4 +80,31 @@ final class AppRepository {
 
         return apps
     }
+
+    func manifest(id: String) throws -> AppManifest? {
+        let statement = try database.prepare(
+            """
+            SELECT id, app_id, schema_version, manifest_yaml, created_at, updated_at
+            FROM manifests
+            WHERE id = ?
+            LIMIT 1;
+            """
+        )
+        defer { sqlite3_finalize(statement) }
+
+        database.bind(id, to: statement, at: 1)
+
+        guard sqlite3_step(statement) == SQLITE_ROW else {
+            return nil
+        }
+
+        return AppManifest(
+            id: database.text(from: statement, at: 0),
+            appID: database.text(from: statement, at: 1),
+            schemaVersion: database.text(from: statement, at: 2),
+            manifestYAML: database.text(from: statement, at: 3),
+            createdAt: database.date(from: statement, at: 4),
+            updatedAt: database.date(from: statement, at: 5)
+        )
+    }
 }
