@@ -1,16 +1,88 @@
 import SwiftUI
 
 struct DiscoverView: View {
+    let catalog: [AppTemplate]
+
+    private var categories: [String] {
+        Array(Set(catalog.map(\.category))).sorted()
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
             HeaderView(title: "Discover", subtitle: "Application catalog coming next.")
 
-            Spacer()
+                ForEach(categories, id: \.self) { category in
+                    CatalogCategorySection(
+                        category: category,
+                        templates: catalog.filter { $0.category == category }
+                    )
+                }
+            }
+            .padding(28)
         }
-        .padding(28)
+    }
+}
+
+struct CatalogCategorySection: View {
+    let category: String
+    let templates: [AppTemplate]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(category)
+                .font(.title2)
+                .bold()
+
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 220), spacing: 12)], spacing: 12) {
+                ForEach(templates) { template in
+                    CatalogAppCard(template: template)
+                }
+            }
+        }
+    }
+}
+
+struct CatalogAppCard: View {
+    let template: AppTemplate
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(template.name)
+                    .font(.headline)
+
+                Spacer()
+
+                Text(template.source == .bundled ? "Template" : "Seed")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Text(template.summary ?? template.image)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+
+            Text(template.image)
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+                .lineLimit(1)
+
+            Spacer(minLength: 0)
+
+            Button {
+            } label: {
+                Label("View Details", systemImage: "arrow.right.circle")
+            }
+            .disabled(true)
+        }
+        .frame(minHeight: 142, alignment: .topLeading)
+        .padding(16)
+        .background(.quaternary, in: .rect(cornerRadius: 8))
     }
 }
 
 #Preview {
-    DiscoverView()
+    DiscoverView(catalog: [])
 }

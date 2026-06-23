@@ -1,0 +1,29 @@
+id: postgresql
+name: PostgreSQL
+category: Databases
+image: postgres:17
+summary: Reliable relational database for app development.
+settings:
+  - id: database
+    type: string
+    title: Database
+    default: app
+  - id: username
+    type: string
+    title: Username
+    default: postgres
+  - id: password
+    type: password
+    title: Password
+    default: postgres
+runtime:
+  ports:
+    - host: 5432
+      container: 5432
+  environment:
+    POSTGRES_DB: "{{settings.database}}"
+    POSTGRES_USER: "{{settings.username}}"
+    POSTGRES_PASSWORD: "{{settings.password}}"
+  volumes:
+    - name: data
+      path: /var/lib/postgresql/data

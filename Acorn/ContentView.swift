@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selection: SidebarDestination? = .home
-    @State private var containerStatus: ContainerStatus = .notInstalled
+    @State private var appModel = AppModel()
 
     var body: some View {
         NavigationSplitView {
@@ -15,19 +15,23 @@ struct ContentView: View {
             Group {
                 switch selection {
                 case .home:
-                    HomeView(containerStatus: containerStatus)
+                    HomeView(runtimeInfo: appModel.runtimeInfo, installedApps: appModel.installedApps)
                 case .discover:
-                    DiscoverView()
+                    DiscoverView(catalog: appModel.catalog)
                 case .settings:
-                    SettingsView(containerStatus: containerStatus)
+                    SettingsView(
+                        runtimeInfo: appModel.runtimeInfo,
+                        storageStatus: appModel.storageStatus,
+                        templateStatus: appModel.templateStatus
+                    )
                 case nil:
-                    HomeView(containerStatus: containerStatus)
+                    HomeView(runtimeInfo: appModel.runtimeInfo, installedApps: appModel.installedApps)
                 }
             }
             .frame(minWidth: 520, minHeight: 360)
         }
         .task {
-            containerStatus = await ContainerRuntimeDetector.status()
+            await appModel.start()
         }
     }
 }
@@ -59,38 +63,6 @@ enum SidebarDestination: String, CaseIterable, Identifiable {
         case .settings:
             "gearshape"
         }
-    }
-}
-
-enum ContainerStatus: Equatable {
-    case installed
-    case notInstalled
-
-    var label: String {
-        switch self {
-        case .installed:
-            "Installed"
-        case .notInstalled:
-            "Not Installed"
-        }
-    }
-}
-
-enum ContainerRuntimeDetector {
-    static func status() async -> ContainerStatus {
-        await Task.detached {
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-            process.arguments = ["which", "container"]
-
-            do {
-                try process.run()
-                process.waitUntilExit()
-                return process.terminationStatus == 0 ? .installed : .notInstalled
-            } catch {
-                return .notInstalled
-            }
-        }.value
     }
 }
 

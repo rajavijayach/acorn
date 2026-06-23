@@ -13,6 +13,17 @@
 		0A1B2C3D4E5F001122334404 /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334304 /* DiscoverView.swift */; };
 		0A1B2C3D4E5F001122334405 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334305 /* SettingsView.swift */; };
 		0A1B2C3D4E5F001122334406 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334306 /* HeaderView.swift */; };
+		0A1B2C3D4E5F001122334407 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334307 /* AppModel.swift */; };
+		0A1B2C3D4E5F001122334408 /* AppStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334308 /* AppStatus.swift */; };
+		0A1B2C3D4E5F001122334409 /* InstalledApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334309 /* InstalledApp.swift */; };
+		0A1B2C3D4E5F00112233440A /* AppManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F00112233430A /* AppManifest.swift */; };
+		0A1B2C3D4E5F00112233440B /* AppTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F00112233430B /* AppTemplate.swift */; };
+		0A1B2C3D4E5F00112233440C /* TemplateLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F00112233430C /* TemplateLoader.swift */; };
+		0A1B2C3D4E5F00112233440D /* RuntimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F00112233430D /* RuntimeService.swift */; };
+		0A1B2C3D4E5F00112233440E /* SQLiteDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F00112233430E /* SQLiteDatabase.swift */; };
+		0A1B2C3D4E5F00112233440F /* AppRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F00112233430F /* AppRepository.swift */; };
+		0A1B2C3D4E5F001122334410 /* SQLiteStorageVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334310 /* SQLiteStorageVerifier.swift */; };
+		0A1B2C3D4E5F001122334411 /* postgresql.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334311 /* postgresql.yaml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +34,17 @@
 		0A1B2C3D4E5F001122334304 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
 		0A1B2C3D4E5F001122334305 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0A1B2C3D4E5F001122334306 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F001122334307 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F001122334308 /* AppStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStatus.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F001122334309 /* InstalledApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstalledApp.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F00112233430A /* AppManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManifest.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F00112233430B /* AppTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTemplate.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F00112233430C /* TemplateLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateLoader.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F00112233430D /* RuntimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeService.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F00112233430E /* SQLiteDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteDatabase.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F00112233430F /* AppRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRepository.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F001122334310 /* SQLiteStorageVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteStorageVerifier.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F001122334311 /* postgresql.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = postgresql.yaml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +77,9 @@
 		0A1B2C3D4E5F001122334101 /* Acorn */ = {
 			isa = PBXGroup;
 			children = (
+				0A1B2C3D4E5F001122334105 /* App */,
+				0A1B2C3D4E5F001122334106 /* Core */,
+				0A1B2C3D4E5F00112233410B /* Resources */,
 				0A1B2C3D4E5F001122334301 /* AcornApp.swift */,
 				0A1B2C3D4E5F001122334302 /* ContentView.swift */,
 				0A1B2C3D4E5F001122334303 /* HomeView.swift */,
@@ -63,6 +88,78 @@
 				0A1B2C3D4E5F001122334306 /* HeaderView.swift */,
 			);
 			path = Acorn;
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F001122334105 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B2C3D4E5F001122334307 /* AppModel.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F001122334106 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B2C3D4E5F001122334107 /* Models */,
+				0A1B2C3D4E5F001122334108 /* Runtime */,
+				0A1B2C3D4E5F001122334109 /* Storage */,
+				0A1B2C3D4E5F00112233410A /* Templates */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F001122334107 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B2C3D4E5F001122334308 /* AppStatus.swift */,
+				0A1B2C3D4E5F001122334309 /* InstalledApp.swift */,
+				0A1B2C3D4E5F00112233430A /* AppManifest.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F001122334108 /* Runtime */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B2C3D4E5F00112233430D /* RuntimeService.swift */,
+			);
+			path = Runtime;
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F001122334109 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B2C3D4E5F00112233430E /* SQLiteDatabase.swift */,
+				0A1B2C3D4E5F00112233430F /* AppRepository.swift */,
+				0A1B2C3D4E5F001122334310 /* SQLiteStorageVerifier.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F00112233410A /* Templates */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B2C3D4E5F00112233430B /* AppTemplate.swift */,
+				0A1B2C3D4E5F00112233430C /* TemplateLoader.swift */,
+			);
+			path = Templates;
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F00112233410B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B2C3D4E5F00112233410C /* Templates */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F00112233410C /* Templates */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B2C3D4E5F001122334311 /* postgresql.yaml */,
+			);
+			path = Templates;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -123,6 +220,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A1B2C3D4E5F001122334411 /* postgresql.yaml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +237,16 @@
 				0A1B2C3D4E5F001122334404 /* DiscoverView.swift in Sources */,
 				0A1B2C3D4E5F001122334405 /* SettingsView.swift in Sources */,
 				0A1B2C3D4E5F001122334406 /* HeaderView.swift in Sources */,
+				0A1B2C3D4E5F001122334407 /* AppModel.swift in Sources */,
+				0A1B2C3D4E5F001122334408 /* AppStatus.swift in Sources */,
+				0A1B2C3D4E5F001122334409 /* InstalledApp.swift in Sources */,
+				0A1B2C3D4E5F00112233440A /* AppManifest.swift in Sources */,
+				0A1B2C3D4E5F00112233440B /* AppTemplate.swift in Sources */,
+				0A1B2C3D4E5F00112233440C /* TemplateLoader.swift in Sources */,
+				0A1B2C3D4E5F00112233440D /* RuntimeService.swift in Sources */,
+				0A1B2C3D4E5F00112233440E /* SQLiteDatabase.swift in Sources */,
+				0A1B2C3D4E5F00112233440F /* AppRepository.swift in Sources */,
+				0A1B2C3D4E5F001122334410 /* SQLiteStorageVerifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,6 +387,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 0.1.0;
+				OTHER_LDFLAGS = "-lsqlite3";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.acorn.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -304,6 +413,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 0.1.0;
+				OTHER_LDFLAGS = "-lsqlite3";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.acorn.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

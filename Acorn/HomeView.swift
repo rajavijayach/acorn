@@ -1,13 +1,31 @@
 import SwiftUI
 
 struct HomeView: View {
-    let containerStatus: ContainerStatus
+    let runtimeInfo: RuntimeInfo
+    let installedApps: [InstalledApp]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HeaderView(title: "Home", subtitle: "Installed applications will appear here.")
 
-            ContainerStatusRow(status: containerStatus)
+            ContainerStatusRow(runtimeInfo: runtimeInfo)
+
+            if installedApps.isEmpty {
+                ContentUnavailableView(
+                    "No Installed Apps",
+                    systemImage: "shippingbox",
+                    description: Text("Install flow arrives in the next milestone.")
+                )
+            } else {
+                List(installedApps) { app in
+                    HStack {
+                        Text(app.name)
+                        Spacer()
+                        Text(app.status.rawValue.capitalized)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
 
             Spacer()
         }
@@ -16,18 +34,23 @@ struct HomeView: View {
 }
 
 struct ContainerStatusRow: View {
-    let status: ContainerStatus
+    let runtimeInfo: RuntimeInfo
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: status == .installed ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .foregroundStyle(status == .installed ? .green : .secondary)
+            Image(systemName: runtimeInfo.isInstalled ? "checkmark.circle.fill" : "xmark.circle.fill")
+                .foregroundStyle(runtimeInfo.isInstalled ? .green : .secondary)
 
             Text("Apple Container:")
                 .font(.headline)
 
-            Text(status.label)
-                .foregroundStyle(status == .installed ? .green : .secondary)
+            Text(runtimeInfo.isInstalled ? "Installed" : "Not Installed")
+                .foregroundStyle(runtimeInfo.isInstalled ? .green : .secondary)
+
+            if let version = runtimeInfo.version {
+                Text(version)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding(16)
         .background(.quaternary, in: .rect(cornerRadius: 8))
@@ -35,5 +58,5 @@ struct ContainerStatusRow: View {
 }
 
 #Preview {
-    HomeView(containerStatus: .notInstalled)
+    HomeView(runtimeInfo: .unavailable, installedApps: [])
 }
