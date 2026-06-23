@@ -1,34 +1,52 @@
 # RFC-0003: Template System
 
 ## Status
-Draft
+Accepted
 
-## Goal
-Define how curated application templates work.
+## Purpose
+Templates define installation behavior and UI generation.
 
-## Principles
-
-- Curated templates only in v0.1
-- Templates define installation behavior
-- Templates define UI settings
-
-## Example
+## Template Structure
 
 ```yaml
+id: postgresql
 name: PostgreSQL
+category: Databases
 image: postgres:17
 ```
 
-## Responsibilities
+## Required Fields
+
+- id
+- name
+- category
+- image
+- settings
+
+## Settings Definition
+
+Supported types:
+- string
+- password
+- integer
+- boolean
+
+## Runtime Definition
 
 Templates define:
+- image
+- environment variables
+- ports
+- volumes
 
-- OCI image
-- Environment variables
-- Port mappings
-- Volumes
-- Installation form fields
+## Rendering
 
-## Future
+Template values may reference settings.
 
-Community templates may be supported in a future release.
+Example:
+
+{{settings.username}}
+
+## Distribution
+
+v0.1 templates are bundled with the application.
