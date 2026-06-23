@@ -55,30 +55,48 @@ final class AppModel {
             throw StorageError.executionFailed(message: "Database not initialized")
         }
 
+        // 1. Render manifest (validation only — no DB writes yet)
         let manifest = try ManifestRenderer().render(
             template: template,
             appName: appName,
             settings: settings
         )
 
-        // Run the installation using RuntimeService
-        try await runtimeService.installApp(manifest: manifest, template: template)
-
+        // 2. Persist the manifest
         try repository.save(manifest: manifest)
 
+        // 3. Create InstalledApp record with .installing status
+        let appID = UUID().uuidString
+        let now = Date()
         let installedApp = InstalledApp(
-            id: UUID().uuidString,
+            id: appID,
             name: appName,
             templateID: template.id,
-            status: .running,
+            status: .installing,
             manifestID: manifest.id,
-            createdAt: Date(),
-            updatedAt: Date()
+            errorMessage: nil,
+            createdAt: now,
+            updatedAt: now
         )
-
         try repository.save(installedApp: installedApp)
 
-        // Refresh list
+        // 4. Refresh so the UI shows "Installing…"
+        installedApps = try repository.installedApps()
+
+        // 5. Execute via RuntimeService
+        do {
+            try await runtimeService.installApp(manifest: manifest, template: template)
+
+            // 6. Success → update to .running
+            try repository.updateStatus(appID: appID, status: .running)
+        } catch {
+            // 7. Failure → update to .failed, persist error message
+            try? repository.updateStatus(appID: appID, status: .failed, errorMessage: error.localizedDescription)
+            installedApps = try repository.installedApps()
+            throw error
+        }
+
+        // 8. Final refresh
         installedApps = try repository.installedApps()
     }
 

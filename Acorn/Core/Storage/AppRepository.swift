@@ -34,8 +34,8 @@ final class AppRepository {
         let statement = try database.prepare(
             """
             INSERT OR REPLACE INTO installed_apps (
-              id, name, template_id, status, manifest_id, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?);
+              id, name, template_id, status, manifest_id, error_message, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
             """
         )
         defer { sqlite3_finalize(statement) }
@@ -45,8 +45,29 @@ final class AppRepository {
         database.bind(installedApp.templateID, to: statement, at: 3)
         database.bind(installedApp.status.rawValue, to: statement, at: 4)
         database.bind(installedApp.manifestID, to: statement, at: 5)
-        database.bind(installedApp.createdAt, to: statement, at: 6)
-        database.bind(installedApp.updatedAt, to: statement, at: 7)
+        database.bind(installedApp.errorMessage ?? "", to: statement, at: 6)
+        database.bind(installedApp.createdAt, to: statement, at: 7)
+        database.bind(installedApp.updatedAt, to: statement, at: 8)
+
+        guard sqlite3_step(statement) == SQLITE_DONE else {
+            throw StorageError.stepFailed(message: database.errorMessage)
+        }
+    }
+
+    func updateStatus(appID: String, status: AppStatus, errorMessage: String? = nil) throws {
+        let statement = try database.prepare(
+            """
+            UPDATE installed_apps
+            SET status = ?, error_message = ?, updated_at = ?
+            WHERE id = ?;
+            """
+        )
+        defer { sqlite3_finalize(statement) }
+
+        database.bind(status.rawValue, to: statement, at: 1)
+        database.bind(errorMessage ?? "", to: statement, at: 2)
+        database.bind(Date(), to: statement, at: 3)
+        database.bind(appID, to: statement, at: 4)
 
         guard sqlite3_step(statement) == SQLITE_DONE else {
             throw StorageError.stepFailed(message: database.errorMessage)
@@ -56,7 +77,7 @@ final class AppRepository {
     func installedApps() throws -> [InstalledApp] {
         let statement = try database.prepare(
             """
-            SELECT id, name, template_id, status, manifest_id, created_at, updated_at
+            SELECT id, name, template_id, status, manifest_id, error_message, created_at, updated_at
             FROM installed_apps
             ORDER BY name ASC;
             """
@@ -65,6 +86,7 @@ final class AppRepository {
 
         var apps: [InstalledApp] = []
         while sqlite3_step(statement) == SQLITE_ROW {
+            let errMsg = database.text(from: statement, at: 5)
             apps.append(
                 InstalledApp(
                     id: database.text(from: statement, at: 0),
@@ -72,8 +94,9 @@ final class AppRepository {
                     templateID: database.text(from: statement, at: 2),
                     status: AppStatus(rawValue: database.text(from: statement, at: 3)) ?? .failed,
                     manifestID: database.text(from: statement, at: 4),
-                    createdAt: database.date(from: statement, at: 5),
-                    updatedAt: database.date(from: statement, at: 6)
+                    errorMessage: errMsg.isEmpty ? nil : errMsg,
+                    createdAt: database.date(from: statement, at: 6),
+                    updatedAt: database.date(from: statement, at: 7)
                 )
             )
         }

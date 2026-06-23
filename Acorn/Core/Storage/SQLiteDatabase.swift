@@ -37,6 +37,9 @@ final class SQLiteDatabase {
             """
         )
 
+        // Non-destructive column addition for existing databases
+        try? execute("ALTER TABLE installed_apps ADD COLUMN error_message TEXT;")
+
         try execute(
             """
             CREATE TABLE IF NOT EXISTS manifests (

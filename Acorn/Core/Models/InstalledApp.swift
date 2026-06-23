@@ -6,6 +6,7 @@ struct InstalledApp: Codable, Identifiable, Equatable {
     var templateID: String
     var status: AppStatus
     var manifestID: String
+    var errorMessage: String?
     var createdAt: Date
     var updatedAt: Date
 }
