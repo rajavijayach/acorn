@@ -1,36 +1,52 @@
 # RFC-0002: Manifest Format
 
 ## Status
-Draft
+Accepted
 
-## Goal
-Define the manifest schema used internally by Acorn.
+## Schema Version
 
-## Example
+apiVersion: acorn.dev/v1
+
+## Top Level Structure
 
 ```yaml
 apiVersion: acorn.dev/v1
 kind: App
-
 metadata:
   name: postgres
-
 spec:
   template: postgresql
-
-  settings:
-    username: postgres
-    password: secret
-    port: 5432
+  settings: {}
 ```
 
-## Requirements
+## Required Fields
 
-- Human readable
-- Exportable
-- Importable
-- Versioned
+### apiVersion
+String.
+
+### kind
+Supported:
+- App
+
+### metadata.name
+Unique app name.
+
+### spec.template
+Template identifier.
+
+### spec.settings
+Key-value settings provided by users.
+
+## Validation Rules
+
+- name must be unique
+- template must exist
+- settings keys must match template definition
 
 ## Storage
 
-Stored internally in SQLite.
+Stored in SQLite as YAML text.
+
+## Export
+
+Exports must preserve exact schema version.
