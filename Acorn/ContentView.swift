@@ -15,7 +15,7 @@ struct ContentView: View {
             Group {
                 switch selection {
                 case .home:
-                    HomeView(runtimeInfo: appModel.runtimeInfo, installedApps: appModel.installedApps, appModel: appModel)
+                    HomeView(installedApps: appModel.installedApps, appModel: appModel, onBrowseApps: { selection = .discover })
                 case .discover:
                     DiscoverView(catalog: appModel.catalog, appModel: appModel)
                 case .settings:
@@ -25,7 +25,7 @@ struct ContentView: View {
                         templateStatus: appModel.templateStatus
                     )
                 case nil:
-                    HomeView(runtimeInfo: appModel.runtimeInfo, installedApps: appModel.installedApps, appModel: appModel)
+                    HomeView(installedApps: appModel.installedApps, appModel: appModel, onBrowseApps: { selection = .discover })
                 }
             }
             .frame(minWidth: 520, minHeight: 360)

@@ -5,6 +5,7 @@ import Observation
 @Observable
 final class AppModel {
     var runtimeInfo: RuntimeInfo = .unavailable
+    var environment: EnvironmentReadiness = .unknown
     var installedApps: [InstalledApp] = []
     var catalog: [AppTemplate] = []
     var storageStatus: FoundationStatus = .pending
@@ -22,6 +23,7 @@ final class AppModel {
 
     private func refreshRuntimeInfo() async {
         runtimeInfo = await runtimeService.info()
+        environment = .current(containerInstalled: runtimeInfo.isInstalled)
     }
 
     private func initializeStorage() {
