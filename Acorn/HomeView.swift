@@ -17,14 +17,40 @@ struct HomeView: View {
                     description: Text("Open Discover to install your first application.")
                 )
             } else {
-                List(installedApps) { app in
-                    InstalledAppRow(app: app)
+                List {
+                    if !runningApps.isEmpty {
+                        Section("Running") {
+                            ForEach(runningApps) { app in
+                                InstalledAppRow(app: app)
+                            }
+                        }
+                    }
+
+                    if !installedSectionApps.isEmpty {
+                        Section("Installed") {
+                            ForEach(installedSectionApps) { app in
+                                InstalledAppRow(app: app)
+                            }
+                        }
+                    }
                 }
             }
 
             Spacer()
         }
         .padding(28)
+    }
+
+    /// Apps currently running, shown in the "Running" section.
+    private var runningApps: [InstalledApp] {
+        installedApps.filter { $0.status == .running }
+    }
+
+    /// Every installed app that is not currently running. Installing, stopped,
+    /// installed, and failed apps are all records in `installed_apps`, so they
+    /// surface here under their existing status badge.
+    private var installedSectionApps: [InstalledApp] {
+        installedApps.filter { $0.status != .running }
     }
 }
 
@@ -112,5 +138,13 @@ struct ContainerStatusRow: View {
 }
 
 #Preview {
-    HomeView(runtimeInfo: .unavailable, installedApps: [])
+    let now = Date()
+    HomeView(
+        runtimeInfo: .unavailable,
+        installedApps: [
+            InstalledApp(id: "1", name: "PostgreSQL", templateID: "postgresql", status: .running, manifestID: "m1", createdAt: now, updatedAt: now),
+            InstalledApp(id: "2", name: "Redis", templateID: "redis", status: .stopped, manifestID: "m2", createdAt: now, updatedAt: now),
+            InstalledApp(id: "3", name: "Ollama", templateID: "ollama", status: .failed, manifestID: "m3", errorMessage: "Image pull failed", createdAt: now, updatedAt: now)
+        ]
+    )
 }
