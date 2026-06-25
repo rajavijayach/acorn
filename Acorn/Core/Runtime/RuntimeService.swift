@@ -4,7 +4,7 @@ protocol RuntimeService {
     func isInstalled() async -> Bool
     func version() async -> String?
     func installApp(manifest: AppManifest, template: AppTemplate) async throws
-    func uninstallApp(appID: String) async throws
+    func uninstallApp(appID: String, volumeNames: [String]) async throws
     func startApp(appID: String) async throws
     func stopApp(appID: String) async throws
     func restartApp(appID: String) async throws
@@ -113,8 +113,17 @@ struct AppleContainerRuntimeService: RuntimeService {
         try await execute(args, failure: RuntimeError.installFailed)
     }
 
-    func uninstallApp(appID: String) async throws {
-        try await execute(["container", "stop", appID], failure: RuntimeError.uninstallFailed)
+    func uninstallApp(appID: String, volumeNames: [String]) async throws {
+        // Force-remove the container (handles a still-running container).
+        try await execute(["container", "rm", "--force", appID], failure: RuntimeError.uninstallFailed)
+
+        // Volumes are removed only when the caller opts to purge data.
+        // TODO(M5): volumes aren't app-scoped — they use the generic template
+        // name (e.g. "data"), so purging is cross-app unsafe once multiple apps
+        // share a volume name. Fix at the install layer when M5 adds more apps.
+        for volume in volumeNames {
+            try await execute(["container", "volume", "rm", volume], failure: RuntimeError.uninstallFailed)
+        }
     }
 
     func startApp(appID: String) async throws {

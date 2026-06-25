@@ -112,6 +112,24 @@ final class AppModel {
         try await transition(app, success: .running) { try await runtimeService.restartApp(appID: $0) }
     }
 
+    /// Removes an app. `keepData` (the safe default) preserves the data volume;
+    /// when false, the template's volumes are purged along with the container.
+    func deleteApp(_ app: InstalledApp, keepData: Bool) async throws {
+        guard let repository else {
+            throw StorageError.executionFailed(message: "Database not initialized")
+        }
+
+        guard let manifest = manifest(for: app) else {
+            throw StorageError.executionFailed(message: "Manifest not found for \(app.name).")
+        }
+
+        let volumeNames = keepData ? [] : (template(for: app)?.runtime?.volumes.map(\.name) ?? [])
+
+        try await runtimeService.uninstallApp(appID: manifest.appID, volumeNames: volumeNames)
+        try repository.delete(appID: app.id, manifestID: manifest.id)
+        installedApps = try repository.installedApps()
+    }
+
     /// Runs a lifecycle command against the app's container, then persists the
     /// resulting status. Container is identified by the manifest's appID — the
     /// name used at `container run --name`. No reinstall involved.

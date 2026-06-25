@@ -74,6 +74,24 @@ final class AppRepository {
         }
     }
 
+    func delete(appID: String, manifestID: String) throws {
+        let appStatement = try database.prepare("DELETE FROM installed_apps WHERE id = ?;")
+        defer { sqlite3_finalize(appStatement) }
+
+        database.bind(appID, to: appStatement, at: 1)
+        guard sqlite3_step(appStatement) == SQLITE_DONE else {
+            throw StorageError.stepFailed(message: database.errorMessage)
+        }
+
+        let manifestStatement = try database.prepare("DELETE FROM manifests WHERE id = ?;")
+        defer { sqlite3_finalize(manifestStatement) }
+
+        database.bind(manifestID, to: manifestStatement, at: 1)
+        guard sqlite3_step(manifestStatement) == SQLITE_DONE else {
+            throw StorageError.stepFailed(message: database.errorMessage)
+        }
+    }
+
     func installedApps() throws -> [InstalledApp] {
         let statement = try database.prepare(
             """

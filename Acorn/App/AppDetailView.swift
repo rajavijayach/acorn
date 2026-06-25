@@ -93,8 +93,12 @@ private struct AppControls: View {
     let app: InstalledApp
     let appModel: AppModel
 
+    @Environment(\.dismiss) private var dismiss
+
     @State private var inFlight = false
     @State private var errorMessage: String?
+    @State private var showingDelete = false
+    @State private var keepData = true
 
     private var canStart: Bool { app.status == .stopped || app.status == .failed }
     private var canStop: Bool { app.status == .running }
@@ -129,8 +133,24 @@ private struct AppControls: View {
             }
 
             Spacer()
+
+            Button(role: .destructive) {
+                keepData = true
+                showingDelete = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+            .disabled(inFlight)
         }
         .buttonStyle(.bordered)
+        .sheet(isPresented: $showingDelete) {
+            DeleteConfirmation(
+                appName: app.name,
+                keepData: $keepData,
+                onCancel: { showingDelete = false },
+                onDelete: confirmDelete
+            )
+        }
         .alert(
             "Action Failed",
             isPresented: Binding(
@@ -154,6 +174,60 @@ private struct AppControls: View {
             }
             inFlight = false
         }
+    }
+
+    private func confirmDelete() {
+        let keepData = self.keepData
+        showingDelete = false
+        inFlight = true
+        Task {
+            do {
+                try await appModel.deleteApp(app, keepData: keepData)
+                inFlight = false
+                dismiss()
+            } catch {
+                errorMessage = error.localizedDescription
+                inFlight = false
+            }
+        }
+    }
+}
+
+private struct DeleteConfirmation: View {
+    let appName: String
+    @Binding var keepData: Bool
+    let onCancel: () -> Void
+    let onDelete: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Delete \(appName)?")
+                .font(.headline)
+
+            Text("The app will be removed from Acorn.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            Toggle("Keep Data", isOn: $keepData)
+
+            Text(keepData
+                 ? "Stored data is preserved and can be reused on reinstall."
+                 : "Stored data will be permanently deleted.")
+                .font(.caption)
+                .foregroundStyle(keepData ? Color.secondary : Color.red)
+
+            HStack {
+                Spacer()
+
+                Button("Cancel", action: onCancel)
+                    .keyboardShortcut(.cancelAction)
+
+                Button(keepData ? "Delete" : "Delete Everything", role: .destructive, action: onDelete)
+                    .keyboardShortcut(.defaultAction)
+            }
+        }
+        .padding(24)
+        .frame(width: 380)
     }
 }
 
