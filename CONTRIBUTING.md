@@ -6,10 +6,11 @@ Thank you for your interest in contributing.
 
 Please read:
 
-- Vision.md
-- Manifest-Spec.md
-- Template-Spec.md
-- RFCs
+- [Vision](Vision.md)
+- [Manifest Spec](Manifest-Spec.md)
+- [Template Spec](Template-Spec.md)
+- [RFCs](rfcs/) — design decisions
+- [Architecture](docs/Architecture.md) and [Roadmap](docs/Roadmap.md)
 
 ## Principles
 

@@ -93,15 +93,15 @@ Apple Container
 
 ## Documentation
 
-- Vision.md
-- Manifest-Spec.md
-- Template-Spec.md
-- docs/
-- rfcs/
+- [Vision](Vision.md) — what Acorn is and who it's for
+- [Manifest Spec](Manifest-Spec.md) and [Template Spec](Template-Spec.md)
+- [Architecture](docs/Architecture.md) · [Roadmap](docs/Roadmap.md) · [UX Principles](docs/UX-Principles.md)
+- Milestones: [M2 Foundation](docs/Milestone-2-Foundation.md) · [M3 App Installation](docs/Milestone-3-App-Installation.md) · [M4 Polish](docs/Milestone-4-Polish.md)
+- [RFCs](rfcs/) — design decisions (App Model, Manifest Format, Runtime Service, …)
 
 ## Contributing
 
-Please read CONTRIBUTING.md before submitting changes.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes.
 
 Documentation, templates, bug fixes, and feedback are all welcome.
 
