@@ -95,31 +95,32 @@ struct InstalledAppRow: View {
 struct AppStatusBadge: View {
     let status: AppStatus
 
+    private var health: AppHealth { status.health }
+
     var body: some View {
         HStack(spacing: 6) {
-            if status == .installing {
+            if health == .starting {
                 ProgressView()
                     .scaleEffect(0.7)
                     .frame(width: 14, height: 14)
             } else {
                 Circle()
-                    .fill(statusColor)
+                    .fill(healthColor)
                     .frame(width: 8, height: 8)
             }
 
-            Text(status.displayName)
+            Text(health.label)
                 .font(.subheadline)
-                .foregroundStyle(statusColor)
+                .foregroundStyle(healthColor)
         }
     }
 
-    private var statusColor: Color {
-        switch status {
-        case .installing: .yellow
-        case .running:    .green
-        case .stopped:    .secondary
-        case .installed:  .blue
-        case .failed:     .red
+    private var healthColor: Color {
+        switch health {
+        case .healthy:  .green
+        case .starting: .yellow
+        case .stopped:  .secondary
+        case .failed:   .red
         }
     }
 }
