@@ -43,4 +43,22 @@ extension AppManifest {
 
         return result
     }
+
+    /// A connection endpoint derived from the manifest settings. Returns a
+    /// libpq-style URI when database credentials are present, otherwise a plain
+    /// host:port endpoint. Host is always localhost — apps are port-mapped to
+    /// the host by Apple Container.
+    var connectionString: String {
+        let settings = self.settings
+        let host = "localhost"
+        let port = settings["port"] ?? ""
+
+        if let username = settings["username"],
+           let password = settings["password"],
+           let database = settings["database"] {
+            return "postgresql://\(username):\(password)@\(host):\(port)/\(database)"
+        }
+
+        return "\(host):\(port)"
+    }
 }

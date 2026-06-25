@@ -49,7 +49,16 @@ struct AppDetailView: View {
 
             switch selectedTab {
             case .overview:
-                OverviewSection(app: liveApp, manifest: manifest, template: template)
+                VStack(spacing: 16) {
+                    OverviewSection(app: liveApp, manifest: manifest, template: template)
+
+                    if let manifest {
+                        ConnectionSection(
+                            manifest: manifest,
+                            onRevealManifest: { selectedTab = .manifest }
+                        )
+                    }
+                }
             case .logs:
                 LogsSection(stream: logStream)
             case .manifest:
@@ -236,10 +245,6 @@ private struct OverviewSection: View {
     let manifest: AppManifest?
     let template: AppTemplate?
 
-    private var settings: [String: String] {
-        manifest?.settings ?? [:]
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             DetailRow(label: "Status", value: app.status.displayName)
@@ -253,14 +258,6 @@ private struct OverviewSection: View {
                 label: "Created",
                 value: app.createdAt.formatted(date: .abbreviated, time: .shortened)
             )
-
-            if let port = settings["port"] {
-                DetailRow(label: "Port", value: port)
-            }
-
-            if let username = settings["username"] {
-                DetailRow(label: "Username", value: username)
-            }
 
             DetailRow(label: "Data Volume", value: dataLocation)
 
@@ -280,6 +277,88 @@ private struct OverviewSection: View {
         return volumes
             .map { "\($0.name) → \($0.path)" }
             .joined(separator: ", ")
+    }
+}
+
+private struct ConnectionSection: View {
+    let manifest: AppManifest
+    let onRevealManifest: () -> Void
+
+    @State private var revealPassword = false
+
+    private var settings: [String: String] { manifest.settings }
+    private let host = "localhost"
+    private var port: String { settings["port"] ?? "—" }
+    private var database: String? { settings["database"] }
+    private var username: String? { settings["username"] }
+    private var password: String? { settings["password"] }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Connection")
+                .font(.headline)
+
+            VStack(spacing: 0) {
+                DetailRow(label: "Host", value: host)
+                DetailRow(label: "Port", value: port)
+
+                if let database {
+                    DetailRow(label: "Database", value: database)
+                }
+
+                if let username {
+                    DetailRow(label: "Username", value: username)
+                }
+
+                if let password {
+                    HStack(alignment: .top, spacing: 12) {
+                        Text("Password")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .frame(width: 130, alignment: .leading)
+
+                        Text(revealPassword ? password : String(repeating: "•", count: max(8, password.count)))
+                            .font(.subheadline)
+                            .textSelection(.enabled)
+
+                        Button {
+                            revealPassword.toggle()
+                        } label: {
+                            Image(systemName: revealPassword ? "eye.slash" : "eye")
+                        }
+                        .buttonStyle(.borderless)
+                        .help(revealPassword ? "Hide password" : "Show password")
+
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.vertical, 6)
+                }
+            }
+
+            HStack(spacing: 8) {
+                Button {
+                    copyConnectionString()
+                } label: {
+                    Label("Copy Connection String", systemImage: "doc.on.doc")
+                }
+
+                Button {
+                    onRevealManifest()
+                } label: {
+                    Label("Reveal Manifest", systemImage: "doc.text")
+                }
+
+                Spacer()
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding(16)
+        .background(.quaternary, in: .rect(cornerRadius: 8))
+    }
+
+    private func copyConnectionString() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(manifest.connectionString, forType: .string)
     }
 }
 
