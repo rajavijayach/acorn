@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct AppDetailView: View {
     let app: InstalledApp
@@ -6,6 +7,7 @@ struct AppDetailView: View {
 
     @State private var manifest: AppManifest?
     @State private var selectedTab: DetailTab = .overview
+    @State private var logStream = LogStream()
 
     /// Always read the freshest record so status changes (e.g. start/stop in a
     /// later milestone) reflect here without re-pushing the view.
@@ -47,7 +49,7 @@ struct AppDetailView: View {
             case .overview:
                 OverviewSection(app: liveApp, manifest: manifest, template: template)
             case .logs:
-                LogsSection()
+                LogsSection(stream: logStream)
             case .manifest:
                 ManifestSection(manifest: manifest)
             }
@@ -56,8 +58,15 @@ struct AppDetailView: View {
         }
         .padding(28)
         .navigationTitle(liveApp.name)
-        .task {
+        .task(id: app.id) {
             manifest = appModel.manifest(for: app)
+            logStream.start(
+                appID: manifest?.appID ?? app.name,
+                runtimeAvailable: appModel.runtimeInfo.isInstalled
+            )
+        }
+        .onDisappear {
+            logStream.stop()
         }
     }
 
@@ -152,13 +161,83 @@ private struct DetailRow: View {
 }
 
 private struct LogsSection: View {
+    let stream: LogStream
+
     var body: some View {
-        ContentUnavailableView(
-            "Logs Coming Soon",
-            systemImage: "doc.plaintext",
-            description: Text("Live log streaming arrives in the next update.")
-        )
-        .frame(maxWidth: .infinity, minHeight: 160)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Button {
+                    stream.isPaused ? stream.resume() : stream.pause()
+                } label: {
+                    Label(stream.isPaused ? "Resume" : "Pause",
+                          systemImage: stream.isPaused ? "play.fill" : "pause.fill")
+                }
+
+                Button {
+                    copyToPasteboard()
+                } label: {
+                    Label("Copy", systemImage: "doc.on.doc")
+                }
+                .disabled(stream.lines.isEmpty)
+
+                Button(role: .destructive) {
+                    stream.clear()
+                } label: {
+                    Label("Clear", systemImage: "trash")
+                }
+                .disabled(stream.lines.isEmpty)
+
+                Spacer()
+
+                if stream.isPaused {
+                    Text("Paused")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.bordered)
+
+            logBody
+        }
+    }
+
+    @ViewBuilder
+    private var logBody: some View {
+        if stream.lines.isEmpty {
+            ContentUnavailableView(
+                "No Logs Yet",
+                systemImage: "doc.plaintext",
+                description: Text("Waiting for output…")
+            )
+            .frame(maxWidth: .infinity, minHeight: 160)
+        } else {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 2) {
+                        ForEach(stream.lines) { line in
+                            Text(line.text)
+                                .font(.system(.caption, design: .monospaced))
+                                .textSelection(.enabled)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .id(line.id)
+                        }
+                    }
+                    .padding(12)
+                }
+                .background(.quaternary, in: .rect(cornerRadius: 8))
+                .onChange(of: stream.lines.count) {
+                    // Auto-scroll to the newest line, but not while paused so the
+                    // view doesn't jump while the user is reading.
+                    guard !stream.isPaused, let last = stream.lines.last else { return }
+                    withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
+                }
+            }
+        }
+    }
+
+    private func copyToPasteboard() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(stream.text, forType: .string)
     }
 }
 
