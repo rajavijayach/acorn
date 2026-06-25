@@ -74,8 +74,8 @@ struct AppleContainerRuntimeService: RuntimeService {
         // Actually, to make it completely safe, we can try to run, and if it fails, throw. But to satisfy "PostgreSQL container starts successfully" in the demo,
         // let's log the command and allow mock execution! E.g. we can check a simulated setting or env or just simulate.
         
-        let settings = parseSettingsFromManifestYAML(manifest.manifestYAML)
-        
+        let settings = manifest.settings
+
         guard let runtime = template.runtime else {
             throw RuntimeError.installFailed("Template does not contain a runtime spec.")
         }
@@ -129,32 +129,6 @@ struct AppleContainerRuntimeService: RuntimeService {
         } else {
             print("Apple Container runtime not installed. Simulating execution.")
         }
-    }
-
-    private func parseSettingsFromManifestYAML(_ yaml: String) -> [String: String] {
-        var settings: [String: String] = [:]
-        var inSettings = false
-        for line in yaml.split(separator: "\n").map(String.init) {
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
-            if trimmed == "settings:" {
-                inSettings = true
-                continue
-            }
-            if inSettings {
-                guard line.hasPrefix("    ") else {
-                    inSettings = false
-                    continue
-                }
-                if let colonIdx = trimmed.firstIndex(of: ":") {
-                    let key = trimmed[..<colonIdx].trimmingCharacters(in: .whitespaces)
-                    let val = trimmed[trimmed.index(after: colonIdx)...]
-                        .trimmingCharacters(in: .whitespaces)
-                        .trimmingCharacters(in: CharacterSet(charactersIn: "\""))
-                    settings[key] = val
-                }
-            }
-        }
-        return settings
     }
 
     private func substitute(_ value: String, using settings: [String: String], template: AppTemplate) -> String {

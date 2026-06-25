@@ -3,42 +3,52 @@ import SwiftUI
 struct HomeView: View {
     let runtimeInfo: RuntimeInfo
     let installedApps: [InstalledApp]
+    let appModel: AppModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            HeaderView(title: "Home", subtitle: "Installed applications appear here.")
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 20) {
+                HeaderView(title: "Home", subtitle: "Installed applications appear here.")
 
-            ContainerStatusRow(runtimeInfo: runtimeInfo)
+                ContainerStatusRow(runtimeInfo: runtimeInfo)
 
-            if installedApps.isEmpty {
-                ContentUnavailableView(
-                    "No Installed Apps",
-                    systemImage: "shippingbox",
-                    description: Text("Open Discover to install your first application.")
-                )
-            } else {
-                List {
-                    if !runningApps.isEmpty {
-                        Section("Running") {
-                            ForEach(runningApps) { app in
-                                InstalledAppRow(app: app)
+                if installedApps.isEmpty {
+                    ContentUnavailableView(
+                        "No Installed Apps",
+                        systemImage: "shippingbox",
+                        description: Text("Open Discover to install your first application.")
+                    )
+                } else {
+                    List {
+                        if !runningApps.isEmpty {
+                            Section("Running") {
+                                ForEach(runningApps) { app in
+                                    NavigationLink(value: app) {
+                                        InstalledAppRow(app: app)
+                                    }
+                                }
                             }
                         }
-                    }
 
-                    if !installedSectionApps.isEmpty {
-                        Section("Installed") {
-                            ForEach(installedSectionApps) { app in
-                                InstalledAppRow(app: app)
+                        if !installedSectionApps.isEmpty {
+                            Section("Installed") {
+                                ForEach(installedSectionApps) { app in
+                                    NavigationLink(value: app) {
+                                        InstalledAppRow(app: app)
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            Spacer()
+                Spacer()
+            }
+            .padding(28)
+            .navigationDestination(for: InstalledApp.self) { app in
+                AppDetailView(app: app, appModel: appModel)
+            }
         }
-        .padding(28)
     }
 
     /// Apps currently running, shown in the "Running" section.
@@ -65,21 +75,7 @@ struct InstalledAppRow: View {
 
                 Spacer()
 
-                HStack(spacing: 6) {
-                    if app.status == .installing {
-                        ProgressView()
-                            .scaleEffect(0.7)
-                            .frame(width: 14, height: 14)
-                    } else {
-                        Circle()
-                            .fill(statusColor)
-                            .frame(width: 8, height: 8)
-                    }
-
-                    Text(statusLabel)
-                        .font(.subheadline)
-                        .foregroundStyle(statusColor)
-                }
+                AppStatusBadge(status: app.status)
             }
 
             if let error = app.errorMessage, app.status == .failed {
@@ -91,19 +87,31 @@ struct InstalledAppRow: View {
         }
         .padding(.vertical, 4)
     }
+}
 
-    private var statusLabel: String {
-        switch app.status {
-        case .installing: "Installing…"
-        case .running:    "Running"
-        case .stopped:    "Stopped"
-        case .installed:  "Installed"
-        case .failed:     "Failed"
+struct AppStatusBadge: View {
+    let status: AppStatus
+
+    var body: some View {
+        HStack(spacing: 6) {
+            if status == .installing {
+                ProgressView()
+                    .scaleEffect(0.7)
+                    .frame(width: 14, height: 14)
+            } else {
+                Circle()
+                    .fill(statusColor)
+                    .frame(width: 8, height: 8)
+            }
+
+            Text(status.displayName)
+                .font(.subheadline)
+                .foregroundStyle(statusColor)
         }
     }
 
     private var statusColor: Color {
-        switch app.status {
+        switch status {
         case .installing: .yellow
         case .running:    .green
         case .stopped:    .secondary
@@ -145,6 +153,7 @@ struct ContainerStatusRow: View {
             InstalledApp(id: "1", name: "PostgreSQL", templateID: "postgresql", status: .running, manifestID: "m1", createdAt: now, updatedAt: now),
             InstalledApp(id: "2", name: "Redis", templateID: "redis", status: .stopped, manifestID: "m2", createdAt: now, updatedAt: now),
             InstalledApp(id: "3", name: "Ollama", templateID: "ollama", status: .failed, manifestID: "m3", errorMessage: "Image pull failed", createdAt: now, updatedAt: now)
-        ]
+        ],
+        appModel: AppModel()
     )
 }

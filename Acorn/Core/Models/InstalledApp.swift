@@ -1,6 +1,6 @@
 import Foundation
 
-struct InstalledApp: Codable, Identifiable, Equatable {
+struct InstalledApp: Codable, Identifiable, Equatable, Hashable {
     let id: String
     var name: String
     var templateID: String

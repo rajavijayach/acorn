@@ -27,6 +27,7 @@
 		0A1B2C3D4E5F001122334412 /* ManifestRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334312 /* ManifestRenderer.swift */; };
 		0A1B2C3D4E5F001122334413 /* ManifestRenderingVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334313 /* ManifestRenderingVerifier.swift */; };
 		0A1B2C3D4E5F001122334414 /* InstallWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334314 /* InstallWizardView.swift */; };
+		0A1B2C3D4E5F001122334415 /* AppDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F001122334315 /* AppDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,7 @@
 		0A1B2C3D4E5F001122334312 /* ManifestRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestRenderer.swift; sourceTree = "<group>"; };
 		0A1B2C3D4E5F001122334313 /* ManifestRenderingVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestRenderingVerifier.swift; sourceTree = "<group>"; };
 		0A1B2C3D4E5F001122334314 /* InstallWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstallWizardView.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F001122334315 /* AppDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 			children = (
 				0A1B2C3D4E5F001122334307 /* AppModel.swift */,
 				0A1B2C3D4E5F001122334314 /* InstallWizardView.swift */,
+				0A1B2C3D4E5F001122334315 /* AppDetailView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 				0A1B2C3D4E5F001122334412 /* ManifestRenderer.swift in Sources */,
 				0A1B2C3D4E5F001122334413 /* ManifestRenderingVerifier.swift in Sources */,
 				0A1B2C3D4E5F001122334414 /* InstallWizardView.swift in Sources */,
+				0A1B2C3D4E5F001122334415 /* AppDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

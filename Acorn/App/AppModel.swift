@@ -100,6 +100,15 @@ final class AppModel {
         installedApps = try repository.installedApps()
     }
 
+    func manifest(for app: InstalledApp) -> AppManifest? {
+        guard let repository else { return nil }
+        return try? repository.manifest(id: app.manifestID)
+    }
+
+    func template(for app: InstalledApp) -> AppTemplate? {
+        catalog.first { $0.id == app.templateID }
+    }
+
     private static var databaseURL: URL {
         FileManager.default
             .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
