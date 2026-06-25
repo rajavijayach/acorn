@@ -19,23 +19,21 @@ Containers are an implementation detail.
 
 ## Current Status
 
-Acorn is under active development.
+Acorn can now:
 
-Implemented:
+- Discover applications
+- Configure installations
+- Generate and validate manifests
+- Launch PostgreSQL using Apple Container
+- Track installation lifecycle
+- Persist installed applications
+- Display installed applications in Home
 
-- Native macOS SwiftUI application
-- Apple Container detection and version checks
-- SQLite persistence layer
-- Manifest rendering engine
-- Template loading system
-- Discover catalog
-- PostgreSQL template
+Currently supported:
 
-In Progress:
+- PostgreSQL
 
-- PostgreSQL installation workflow
-- Runtime execution layer
-- Installed apps dashboard
+Additional curated applications (Redis, Ollama, Open WebUI, N8N) are planned next.
 
 ## Product Principles
 
