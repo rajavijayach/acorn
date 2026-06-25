@@ -100,6 +100,46 @@ final class AppModel {
         installedApps = try repository.installedApps()
     }
 
+    func startApp(_ app: InstalledApp) async throws {
+        try await transition(app, success: .running) { try await runtimeService.startApp(appID: $0) }
+    }
+
+    func stopApp(_ app: InstalledApp) async throws {
+        try await transition(app, success: .stopped) { try await runtimeService.stopApp(appID: $0) }
+    }
+
+    func restartApp(_ app: InstalledApp) async throws {
+        try await transition(app, success: .running) { try await runtimeService.restartApp(appID: $0) }
+    }
+
+    /// Runs a lifecycle command against the app's container, then persists the
+    /// resulting status. Container is identified by the manifest's appID — the
+    /// name used at `container run --name`. No reinstall involved.
+    private func transition(
+        _ app: InstalledApp,
+        success: AppStatus,
+        command: (String) async throws -> Void
+    ) async throws {
+        guard let repository else {
+            throw StorageError.executionFailed(message: "Database not initialized")
+        }
+
+        guard let manifest = manifest(for: app) else {
+            throw StorageError.executionFailed(message: "Manifest not found for \(app.name).")
+        }
+
+        do {
+            try await command(manifest.appID)
+            try repository.updateStatus(appID: app.id, status: success)
+        } catch {
+            try? repository.updateStatus(appID: app.id, status: .failed, errorMessage: error.localizedDescription)
+            installedApps = (try? repository.installedApps()) ?? installedApps
+            throw error
+        }
+
+        installedApps = try repository.installedApps()
+    }
+
     func manifest(for app: InstalledApp) -> AppManifest? {
         guard let repository else { return nil }
         return try? repository.manifest(id: app.manifestID)

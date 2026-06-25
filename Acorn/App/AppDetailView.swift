@@ -37,6 +37,8 @@ struct AppDetailView: View {
                 AppStatusBadge(status: liveApp.status)
             }
 
+            AppControls(app: liveApp, appModel: appModel)
+
             Picker("Section", selection: $selectedTab) {
                 ForEach(DetailTab.allCases) { tab in
                     Text(tab.title).tag(tab)
@@ -83,6 +85,74 @@ struct AppDetailView: View {
             case .logs:     "Logs"
             case .manifest: "Manifest"
             }
+        }
+    }
+}
+
+private struct AppControls: View {
+    let app: InstalledApp
+    let appModel: AppModel
+
+    @State private var inFlight = false
+    @State private var errorMessage: String?
+
+    private var canStart: Bool { app.status == .stopped || app.status == .failed }
+    private var canStop: Bool { app.status == .running }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Button {
+                perform { try await appModel.startApp(app) }
+            } label: {
+                Label("Start", systemImage: "play.fill")
+            }
+            .disabled(!canStart || inFlight)
+
+            Button {
+                perform { try await appModel.stopApp(app) }
+            } label: {
+                Label("Stop", systemImage: "stop.fill")
+            }
+            .disabled(!canStop || inFlight)
+
+            Button {
+                perform { try await appModel.restartApp(app) }
+            } label: {
+                Label("Restart", systemImage: "arrow.clockwise")
+            }
+            .disabled(!canStop || inFlight)
+
+            if inFlight {
+                ProgressView()
+                    .scaleEffect(0.6)
+                    .frame(width: 16, height: 16)
+            }
+
+            Spacer()
+        }
+        .buttonStyle(.bordered)
+        .alert(
+            "Action Failed",
+            isPresented: Binding(
+                get: { errorMessage != nil },
+                set: { if !$0 { errorMessage = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(errorMessage ?? "")
+        }
+    }
+
+    private func perform(_ action: @escaping () async throws -> Void) {
+        inFlight = true
+        Task {
+            do {
+                try await action()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            inFlight = false
         }
     }
 }

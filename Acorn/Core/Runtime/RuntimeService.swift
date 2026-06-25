@@ -5,6 +5,9 @@ protocol RuntimeService {
     func version() async -> String?
     func installApp(manifest: AppManifest, template: AppTemplate) async throws
     func uninstallApp(appID: String) async throws
+    func startApp(appID: String) async throws
+    func stopApp(appID: String) async throws
+    func restartApp(appID: String) async throws
 }
 
 struct RuntimeInfo: Equatable {
@@ -18,6 +21,9 @@ enum RuntimeError: LocalizedError {
     case runtimeUnavailable
     case installFailed(String)
     case uninstallFailed(String)
+    case startFailed(String)
+    case stopFailed(String)
+    case restartFailed(String)
 
     var errorDescription: String? {
         switch self {
@@ -27,6 +33,12 @@ enum RuntimeError: LocalizedError {
             return "Installation failed: \(message)"
         case .uninstallFailed(let message):
             return "Uninstall failed: \(message)"
+        case .startFailed(let message):
+            return "Start failed: \(message)"
+        case .stopFailed(let message):
+            return "Stop failed: \(message)"
+        case .restartFailed(let message):
+            return "Restart failed: \(message)"
         }
     }
 }
@@ -97,37 +109,42 @@ struct AppleContainerRuntimeService: RuntimeService {
         }
         
         args.append(template.image)
-        
-        // Log generated command
-        print("Executing runtime command: \(args.joined(separator: " "))")
-        
-        // If container CLI is installed, run it
-        if await isInstalled() {
-            guard let result = await run(arguments: args) else {
-                throw RuntimeError.installFailed("Failed to execute process.")
-            }
-            if result.exitCode != 0 {
-                throw RuntimeError.installFailed(result.standardError)
-            }
-        } else {
-            // Mock success for development/testing if container tool is not present
-            print("Apple Container runtime not installed. Simulating execution.")
-        }
+
+        try await execute(args, failure: RuntimeError.installFailed)
     }
 
     func uninstallApp(appID: String) async throws {
-        let args = ["container", "stop", appID]
+        try await execute(["container", "stop", appID], failure: RuntimeError.uninstallFailed)
+    }
+
+    func startApp(appID: String) async throws {
+        try await execute(["container", "start", appID], failure: RuntimeError.startFailed)
+    }
+
+    func stopApp(appID: String) async throws {
+        try await execute(["container", "stop", appID], failure: RuntimeError.stopFailed)
+    }
+
+    func restartApp(appID: String) async throws {
+        try await execute(["container", "restart", appID], failure: RuntimeError.restartFailed)
+    }
+
+    /// Runs a container CLI command, or simulates success when Apple Container
+    /// isn't installed (development/testing).
+    private func execute(_ args: [String], failure: (String) -> RuntimeError) async throws {
         print("Executing runtime command: \(args.joined(separator: " "))")
-        
-        if await isInstalled() {
-            guard let result = await run(arguments: args) else {
-                throw RuntimeError.uninstallFailed("Failed to execute process.")
-            }
-            if result.exitCode != 0 {
-                throw RuntimeError.uninstallFailed(result.standardError)
-            }
-        } else {
+
+        guard await isInstalled() else {
             print("Apple Container runtime not installed. Simulating execution.")
+            return
+        }
+
+        guard let result = await run(arguments: args) else {
+            throw failure("Failed to execute process.")
+        }
+
+        if result.exitCode != 0 {
+            throw failure(result.standardError)
         }
     }
 
