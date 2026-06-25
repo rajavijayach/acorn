@@ -73,7 +73,10 @@ final class SQLiteDatabase {
     }
 
     func bind(_ date: Date, to statement: OpaquePointer?, at index: Int32) {
-        bind(dateFormatter.string(from: date), to: statement, at: index)
+        // Store as REAL using Date's native interval for a lossless round-trip.
+        // ISO-8601 text truncates to whole seconds, which silently dropped
+        // sub-second precision on every write.
+        sqlite3_bind_double(statement, index, date.timeIntervalSinceReferenceDate)
     }
 
     func text(from statement: OpaquePointer?, at index: Int32) -> String {
@@ -85,7 +88,15 @@ final class SQLiteDatabase {
     }
 
     func date(from statement: OpaquePointer?, at index: Int32) -> Date {
-        dateFormatter.date(from: text(from: statement, at: index)) ?? Date(timeIntervalSince1970: 0)
+        // Legacy rows hold ISO-8601 text; everything written now is REAL.
+        // (NUMERIC affinity may store a whole-second value as INTEGER —
+        // sqlite3_column_double coerces either case back to the exact value,
+        // so branch only on TEXT.)
+        if sqlite3_column_type(statement, index) == SQLITE_TEXT {
+            return dateFormatter.date(from: text(from: statement, at: index)) ?? Date(timeIntervalSince1970: 0)
+        }
+
+        return Date(timeIntervalSinceReferenceDate: sqlite3_column_double(statement, index))
     }
 
     var errorMessage: String {
