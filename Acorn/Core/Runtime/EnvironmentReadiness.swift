@@ -19,6 +19,32 @@ enum SystemEnvironment {
     static var isMacOSCompatible: Bool {
         ProcessInfo.processInfo.operatingSystemVersion.majorVersion >= minimumMacOSMajorVersion
     }
+
+    static var macOSVersionString: String {
+        let v = ProcessInfo.processInfo.operatingSystemVersion
+        return "\(v.majorVersion).\(v.minorVersion).\(v.patchVersion)"
+    }
+}
+
+/// One line in the diagnostics report. `ok` drives the row indicator.
+struct DiagnosticItem: Identifiable {
+    let label: String
+    let value: String
+    let ok: Bool
+
+    var id: String { label }
+}
+
+/// Builds a plain-text diagnostics report suitable for pasting into a GitHub
+/// issue.
+enum Diagnostics {
+    static func report(_ items: [DiagnosticItem]) -> String {
+        var lines = ["Acorn Diagnostics", "================="]
+        for item in items {
+            lines.append("\(item.label): \(item.value)")
+        }
+        return lines.joined(separator: "\n") + "\n"
+    }
 }
 
 /// Whether the environment can run apps, broken down so the UI can guide the

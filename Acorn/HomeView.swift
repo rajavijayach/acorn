@@ -209,30 +209,6 @@ private struct CheckRow: View {
     }
 }
 
-struct ContainerStatusRow: View {
-    let runtimeInfo: RuntimeInfo
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: runtimeInfo.isInstalled ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .foregroundStyle(runtimeInfo.isInstalled ? .green : .secondary)
-
-            Text("Apple Container:")
-                .font(.headline)
-
-            Text(runtimeInfo.isInstalled ? "Installed" : "Not Installed")
-                .foregroundStyle(runtimeInfo.isInstalled ? .green : .secondary)
-
-            if let version = runtimeInfo.version {
-                Text(version)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .padding(16)
-        .background(.quaternary, in: .rect(cornerRadius: 8))
-    }
-}
-
 #Preview {
     let now = Date()
     HomeView(
